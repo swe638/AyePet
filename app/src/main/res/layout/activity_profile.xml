@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfileActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar2"
+        android:background="@color/colorAccent"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="AyePets!"
+        app:titleMarginStart="40dp"
+        app:logo="@drawable/ic_back"
+        tools:ignore="MissingConstraints" />
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:addStatesFromChildren="false"
+        android:scrollbarSize="4dp"
+        android:verticalScrollbarPosition="defaultPosition"
+        android:visibility="visible"
+        app:elevation="8dp"
+        app:itemBackground="@color/colorPrimary"
+        app:itemHorizontalTranslationEnabled="false"
+        app:itemIconSize="30dp"
+        app:itemIconTint="@drawable/nav_item_color_state"
+        app:itemTextColor="@drawable/nav_item_color_state"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_main"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="397dp"
+        android:layout_height="202dp"
+        android:text="User Information"
+        tools:layout_editor_absoluteX="6dp"
+        tools:layout_editor_absoluteY="467dp"/>
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="409dp"
+        android:layout_height="404dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="56dp"
+        tools:srcCompat="@tools:sample/avatars[2]" />
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="58dp"
+        android:layout_height="52dp"
+        android:background="@drawable/round_button"
+        android:scaleType="center"
+        app:srcCompat="@drawable/ic_call"
+        tools:layout_editor_absoluteX="259dp"
+        tools:layout_editor_absoluteY="414dp"
+        tools:ignore="VectorDrawableCompat" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="57dp"
+        android:layout_height="52dp"
+        android:background="@drawable/round_button"
+        app:srcCompat="@drawable/ic_chat"
+        tools:layout_editor_absoluteX="338dp"
+        tools:layout_editor_absoluteY="414dp"
+        tools:ignore="VectorDrawableCompat" />
+
+
+
+</android.support.constraint.ConstraintLayout>
