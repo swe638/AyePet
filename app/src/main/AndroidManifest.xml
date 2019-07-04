@@ -1,65 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.firebase">
-    <uses-permission android:name="android.permission.INTERNET"/>
-
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    package="com.example.aye_pet">
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".activity.ReferFriendActivity" />
+        <activity android:name=".activity.DonationActivity" />
+        <activity android:name=".activity.MainActivity" />
+        <activity android:name=".activity.MyPetListActivity" />
+        <activity android:name=".activity.PetProfileActivity" />
+        <activity android:name=".activity.UpdatePetActivity" />
+        <activity android:name=".activity.UserProfileActivity" />
+        <activity android:name=".activity.UpdateUserProfileActivity" />
+        <activity android:name=".activity.ResetpasswordActivity" />
+        <activity android:name=".activity.SignupActivity" />
+        <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_profile"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".SignupActivity"
-            android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ResetPasswordActivity"
-            android:label="@string/title_activity_reset_password"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
-        <activity android:name=".AccountActivity"
-            android:label="User Account"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
-        <activity android:name=".DonationActivity" />
-        <activity android:name=".ListPetActivity"
-            android:label="Pet Listing"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
-        <activity android:name=".ProfileActivity" />
-
-        <activity android:name=".LocationActivity"
-            android:label="Location Map"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity
-            android:name=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".DashboardActivity" />
     </application>
+
 </manifest>
