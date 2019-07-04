@@ -94,6 +94,7 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
                 } else if (oldProfile.getGender().equals("Female")){
                     rg_gender.check(rg_gender.getChildAt(1).getId());
                 }
+                gender = oldProfile.getGender();
             }
         }
 
@@ -111,20 +112,6 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
         HideSoftKeyboard(et_lname);
         HideSoftKeyboard(et_address);
         HideSoftKeyboard(et_phone);
-
-//        et_lname.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                return HideSoftKeyboard(v);
-//            }
-//        });
-//
-//        et_phone.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                return HideSoftKeyboard(v);
-//            }
-//        });
 
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 

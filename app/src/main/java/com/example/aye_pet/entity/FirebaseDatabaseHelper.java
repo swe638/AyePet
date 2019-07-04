@@ -7,6 +7,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -29,8 +30,20 @@ public class FirebaseDatabaseHelper {
         mReferemcePets = mDatabase.getReference("pet");
     }
 
-    public void readPets(final DataStatus dataStatus){
-        mReferemcePets.addValueEventListener(new ValueEventListener() {
+    public void readPets(String queryType, String queryValue, final DataStatus dataStatus){
+        Query mQuery;
+
+//        queryType = "All";
+//        queryValue = "All";
+        System.out.println(queryType + queryValue);
+
+        if(queryType.equals("All") && queryValue.equals("All")){
+            mQuery = mReferemcePets;
+        } else {
+            mQuery = mReferemcePets.orderByChild(queryType).equalTo(queryValue);
+        }
+
+        mQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 pets.clear();

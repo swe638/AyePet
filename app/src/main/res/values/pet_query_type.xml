@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pet_query_type">
+        <item>All</item>
+        <item>type</item>
+        <item>gender</item>
+        <item>size</item>
+        <item>age</item>
+    </string-array>
+</resources>

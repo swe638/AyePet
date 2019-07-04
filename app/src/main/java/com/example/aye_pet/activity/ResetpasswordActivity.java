@@ -2,10 +2,13 @@ package com.example.aye_pet.activity;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,6 +18,7 @@ import com.example.aye_pet.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.annotations.NotNull;
 
 public class ResetpasswordActivity extends AppCompatActivity {
 
@@ -32,6 +36,8 @@ public class ResetpasswordActivity extends AppCompatActivity {
         btnReset = (Button) findViewById(R.id.btn_reset_password);
         btnBack = (Button) findViewById(R.id.btn_back);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        HideSoftKeyboard(inputEmail);
 
         auth = FirebaseAuth.getInstance();
 
@@ -67,6 +73,17 @@ public class ResetpasswordActivity extends AppCompatActivity {
                                 progressBar.setVisibility(View.GONE);
                             }
                         });
+            }
+        });
+    }
+
+    private void HideSoftKeyboard(@NotNull EditText et) {
+        et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                InputMethodManager ime = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                ime.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                return true;
             }
         });
     }

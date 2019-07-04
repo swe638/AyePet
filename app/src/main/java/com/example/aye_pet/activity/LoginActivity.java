@@ -3,10 +3,13 @@ package com.example.aye_pet.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.annotations.NotNull;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -46,6 +50,9 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+
+        HideSoftKeyboard(inputEmail);
+        HideSoftKeyboard(inputPassword);
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +119,17 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void HideSoftKeyboard(@NotNull EditText et) {
+        et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                InputMethodManager ime = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                ime.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                return true;
+            }
+        });
     }
 }
 

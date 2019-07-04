@@ -7,14 +7,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +32,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -39,6 +43,7 @@ import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class AddPetFragment extends Fragment {
     private String userId;
@@ -84,6 +89,10 @@ public class AddPetFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstaceState) {
+
+        HideSoftKeyboard(et_name);
+        HideSoftKeyboard(et_location);
+        HideSoftKeyboard(et_description);
 
         imageButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -268,5 +277,16 @@ public class AddPetFragment extends Fragment {
         }else{
             Toast.makeText(getActivity(), "Please enter all information", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void HideSoftKeyboard(@NotNull EditText et) {
+        et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                InputMethodManager ime = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                ime.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                return true;
+            }
+        });
     }
 }
