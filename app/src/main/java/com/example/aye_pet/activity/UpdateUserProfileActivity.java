@@ -2,6 +2,7 @@ package com.example.aye_pet.activity;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -42,7 +44,6 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class UpdateUserProfileActivity extends AppCompatActivity {
-    final ProgressDialog progressDialog = new ProgressDialog(this);
     private String userId;
     private User oldProfile;
     private String email;
@@ -166,7 +167,24 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
         btn_submit.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                uploadImage();
+                AlertDialog.Builder builder = new AlertDialog.Builder(UpdateUserProfileActivity.this);
+                builder.setCancelable(true)
+                        .setTitle("Update User Profile")
+                        .setMessage("Submit?")
+                        .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                uploadImage();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .create()
+                        .show();
                 }
         });
 
@@ -214,11 +232,11 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
     }
 
     private void uploadUserData(){
-                databaseReference.child(userId).setValue(newProfile);
-                System.out.println(imageURL);
-                startActivity(new Intent(UpdateUserProfileActivity.this, MainActivity.class));
-                finish();
-
+        databaseReference.child(userId).setValue(newProfile);
+        if(getIntent()==null && getIntent().getExtras()==null) {
+            startActivity(new Intent(UpdateUserProfileActivity.this, MainActivity.class));
+        }
+        finish();
     }
 
     private void chooseImage() {
@@ -250,6 +268,7 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
         if(checkNewUserProfile()==true) {
             if (filePath != null) {
 
+                final ProgressDialog progressDialog = new ProgressDialog(this);
                 progressDialog.setTitle("Uploading...");
                 progressDialog.show();
 
@@ -277,13 +296,12 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
                     }
                 });
             } else {
-                if (imageURL.equals("null")) {
+                if (!imageURL.equals("null")) {
                     newProfile.setImageURL(imageURL);
-                    uploadUserData();
                 } else {
-                    Toast.makeText(UpdateUserProfileActivity.this, "Please choose an image!" , Toast.LENGTH_SHORT).show();
-
+                    newProfile.setImageURL("");
                 }
+                uploadUserData();
             }
         }
     }

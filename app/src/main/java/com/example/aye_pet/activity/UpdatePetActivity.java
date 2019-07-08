@@ -1,6 +1,7 @@
 package com.example.aye_pet.activity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -72,7 +74,6 @@ public class UpdatePetActivity extends AppCompatActivity {
         rg_dewormed = findViewById(R.id.UpdatePet_dewormedGroup);
         rg_neutered = findViewById(R.id.UpdatePet_neuteredGroup);
         btn_update = findViewById(R.id.UpdatePet_updateButton);
-        btn_delete = findViewById(R.id.UpdatePet_deleteButton);
 
         pet = (Pet) getIntent().getSerializableExtra("PET");
         key = getIntent().getStringExtra("KEY");
@@ -151,37 +152,27 @@ public class UpdatePetActivity extends AppCompatActivity {
         btn_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                upload();
+                AlertDialog.Builder builder = new AlertDialog.Builder(UpdatePetActivity.this);
+                builder.setCancelable(true)
+                        .setTitle("Update Pet Profile")
+                        .setMessage("Save changes?")
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                upload();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
 
-        btn_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new FirebaseDatabaseHelper().deletePet(key, new FirebaseDatabaseHelper.DataStatus() {
-                    @Override
-                    public void DataIsLoaded(List<Pet> pets, List<String> keys) {
-
-                    }
-
-                    @Override
-                    public void DataIsInserted() {
-
-                    }
-
-                    @Override
-                    public void DataIsUpdated() {
-
-                    }
-
-                    @Override
-                    public void DataIsDeleted() {
-                        Toast.makeText(UpdatePetActivity.this, pet.getName() + "'s profile has been deleted", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                });
-            }
-        });
     }
 
     private void selectSpinnerItemByValue(Spinner spnr, @NotNull String value) {
@@ -262,14 +253,13 @@ public class UpdatePetActivity extends AppCompatActivity {
                             newPet.setImageURL(imageURL);
                             uploadPetData();
                         } else {
-                            Toast.makeText(UpdatePetActivity.this, "upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             progressDialog.hide();
+                            Toast.makeText(UpdatePetActivity.this, "upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             } else {
                 uploadPetData();
-                progressDialog.hide();
             }
         }
     }
