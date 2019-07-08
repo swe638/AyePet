@@ -28,8 +28,6 @@ import com.example.aye_pet.entity.Pet;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -39,7 +37,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class UpdatePetActivity extends AppCompatActivity {
-
     private ImageButton imageButton;
     private EditText et_name, et_location, et_description;
     private Spinner s_type, s_gender, s_size, s_age;
@@ -49,10 +46,9 @@ public class UpdatePetActivity extends AppCompatActivity {
 
     private Pet pet;
     private String key;
+    private Pet newPet;
 
-    private FirebaseDatabase firebaseDatabase;
     private FirebaseStorage firebaseStorage;
-    private DatabaseReference databaseReference;
     private StorageReference storageReference;
 
     private Uri filePath;
@@ -81,12 +77,11 @@ public class UpdatePetActivity extends AppCompatActivity {
         pet = (Pet) getIntent().getSerializableExtra("PET");
         key = getIntent().getStringExtra("KEY");
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
-        databaseReference = firebaseDatabase.getReference("pet");
         storageReference = firebaseStorage.getReference("pet");
 
         Glide.with(getApplicationContext()).load(pet.getImageURL()).into(imageButton);
+        imageURL = pet.getImageURL();
         et_name.setText(pet.getName());
         selectSpinnerItemByValue(s_type, pet.getType());
         selectSpinnerItemByValue(s_gender, pet.getGender());
@@ -242,49 +237,44 @@ public class UpdatePetActivity extends AppCompatActivity {
     }
 
     private void upload() {
-        final ProgressDialog progressDialog = new ProgressDialog(UpdatePetActivity.this);
-        progressDialog.setTitle("Uploading...");
-        progressDialog.show();
-        final String PetId = key;
+        if(checkPetProfile()==true) {
+            final ProgressDialog progressDialog = new ProgressDialog(UpdatePetActivity.this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
 
-        if(filePath != null)
-        {
-            final StorageReference ref = storageReference.child(PetId);
+            if (filePath != null) {
+                final StorageReference ref = storageReference.child(key);
 
-            ref.putFile(filePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful())
-                    {
-                        throw task.getException();
+                ref.putFile(filePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return ref.getDownloadUrl();
                     }
-                    return ref.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task)
-                {
-                    if (task.isSuccessful())
-                    {
-                        Uri downloadUri = task.getResult();
-                        imageURL = downloadUri.toString();
-                        uploadPetData(PetId);
-                        progressDialog.hide();
-                    } else
-                    {
-                        Toast.makeText(UpdatePetActivity.this, "upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        progressDialog.hide();
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            imageURL = downloadUri.toString();
+                            newPet.setImageURL(imageURL);
+                            uploadPetData();
+                        } else {
+                            Toast.makeText(UpdatePetActivity.this, "upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            progressDialog.hide();
+                        }
                     }
-                }
-            });
-        } else {
-            imageURL = pet.getImageURL();
-            uploadPetData(PetId);
-            progressDialog.hide();
+                });
+            } else {
+                uploadPetData();
+                progressDialog.hide();
+            }
         }
     }
 
-    private void uploadPetData(String petId){
+    private boolean checkPetProfile(){
         String userId = pet.getOwnerId();
         String name = et_name.getText().toString().trim();
         String type = s_type.getSelectedItem().toString().trim();
@@ -297,9 +287,16 @@ public class UpdatePetActivity extends AppCompatActivity {
 
         if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(type) && !TextUtils.isEmpty(gender) && !TextUtils.isEmpty(size) && !TextUtils.isEmpty(age)
                 && !TextUtils.isEmpty(location) && !TextUtils.isEmpty(description)) {
-            Pet newPet = new Pet(userId, name, type, gender, size, age, vaccinated, dewormed, neutered, location, postedDate, description, imageURL);
+            newPet = new Pet(userId, name, type, gender, size, age, vaccinated, dewormed, neutered, location, postedDate, description, imageURL);
+            return true;
+        } else {
+            Toast.makeText(UpdatePetActivity.this, "Please enter all information", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
 
-            new FirebaseDatabaseHelper().updatePet(petId, newPet, new FirebaseDatabaseHelper.DataStatus() {
+    private void uploadPetData(){
+            new FirebaseDatabaseHelper().updatePet(key, newPet, new FirebaseDatabaseHelper.DataStatus() {
                 @Override
                 public void DataIsLoaded(List<Pet> pets, List<String> keys) {
 
@@ -313,7 +310,7 @@ public class UpdatePetActivity extends AppCompatActivity {
                 @Override
                 public void DataIsUpdated() {
                     Toast.makeText(UpdatePetActivity.this, "Pet profile has been Updated successfully", Toast.LENGTH_SHORT).show();
-                    System.out.println(imageURL);
+//                    System.out.println(imageURL);
                     finish();
                 }
 
@@ -322,8 +319,5 @@ public class UpdatePetActivity extends AppCompatActivity {
 
                 }
             });
-        } else {
-            Toast.makeText(UpdatePetActivity.this, "Please enter all information", Toast.LENGTH_SHORT).show();
-        }
     }
 }

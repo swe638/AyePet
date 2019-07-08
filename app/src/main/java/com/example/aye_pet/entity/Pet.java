@@ -88,4 +88,7 @@ public class Pet implements Serializable {
         return imageURL;
     }
 
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
 }

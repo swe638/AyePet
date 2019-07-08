@@ -47,6 +47,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class AddPetFragment extends Fragment {
     private String userId;
+    private Pet newPet;
 
     private ImageButton imageButton;
     private EditText et_name, et_location, et_description;
@@ -194,48 +195,7 @@ public class AddPetFragment extends Fragment {
         }
     }
 
-    private void uploadImage() {
-        if(filePath != null)
-        {
-            final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-
-            final String newPetId = databaseReference.push().getKey();
-
-            final StorageReference ref = storageReference.child(newPetId);
-
-            ref.putFile(filePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful())
-                    {
-                        throw task.getException();
-                    }
-                    return ref.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task)
-                {
-                    if (task.isSuccessful())
-                    {
-                        Uri downloadUri = task.getResult();
-                        imageURL = downloadUri.toString();
-                        uploadPetData();
-                        progressDialog.hide();
-                    } else
-                    {
-                        Toast.makeText(getActivity(), "upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        } else {
-            Toast.makeText(getActivity(), "Please choose an image", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void uploadPetData(){
+    private boolean checkPetProfile(){
         String name = et_name.getText().toString().trim();
         String type = s_type.getSelectedItem().toString().trim();
         String gender = s_gender.getSelectedItem().toString().trim();
@@ -246,10 +206,62 @@ public class AddPetFragment extends Fragment {
         Date date = new Date();
         String postedDate = formatter.format(date);
         String description = et_description.getText().toString().trim();
-        Pet newPet = new Pet(userId, name, type, gender, size, age, vaccinated, dewormed, neutered, location, postedDate, description, imageURL);
-
         if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(type) && !TextUtils.isEmpty(gender) && !TextUtils.isEmpty(size) && !TextUtils.isEmpty(age)
-                && !TextUtils.isEmpty(location) && !TextUtils.isEmpty(description) && !TextUtils.isEmpty(vaccinated) && !TextUtils.isEmpty(dewormed) && !TextUtils.isEmpty(neutered)){
+                && !TextUtils.isEmpty(location) && !TextUtils.isEmpty(description) && !TextUtils.isEmpty(vaccinated) && !TextUtils.isEmpty(dewormed) && !TextUtils.isEmpty(neutered)) {
+            imageURL = "";
+            newPet = new Pet(userId, name, type, gender, size, age, vaccinated, dewormed, neutered, location, postedDate, description, imageURL);
+            return true;
+        }else{
+            Toast.makeText(getActivity(), "Please enter all information", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+
+    private void uploadImage() {
+        if(checkPetProfile()==true){
+            if(filePath != null)
+            {
+                final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setTitle("Uploading...");
+                progressDialog.show();
+
+                final String newPetId = databaseReference.push().getKey();
+
+                final StorageReference ref = storageReference.child(newPetId);
+
+                ref.putFile(filePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful())
+                        {
+                            throw task.getException();
+                        }
+                        return ref.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task)
+                    {
+                        if (task.isSuccessful())
+                        {
+                            Uri downloadUri = task.getResult();
+                            imageURL = downloadUri.toString();
+                            newPet.setImageURL(imageURL);
+                            uploadPetData();
+                            progressDialog.hide();
+                        } else {
+                            progressDialog.hide();
+                            Toast.makeText(getActivity(), "upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            } else {
+                Toast.makeText(getActivity(), "Please choose an image", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void uploadPetData(){
             new FirebaseDatabaseHelper().addPet(newPet, new FirebaseDatabaseHelper.DataStatus() {
                 @Override
                 public void DataIsLoaded(List<Pet> pets, List<String> keys) {
@@ -274,9 +286,6 @@ public class AddPetFragment extends Fragment {
 
                 }
             });
-        }else{
-            Toast.makeText(getActivity(), "Please enter all information", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void HideSoftKeyboard(@NotNull EditText et) {

@@ -42,9 +42,11 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class UpdateUserProfileActivity extends AppCompatActivity {
+    final ProgressDialog progressDialog = new ProgressDialog(this);
     private String userId;
     private User oldProfile;
     private String email;
+    private User newProfile;
 
     private EditText et_fname, et_lname, et_address, et_phone;
     private TextView et_bday;
@@ -76,6 +78,7 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
         et_phone = findViewById(R.id.FTime_phone);
         btn_submit = findViewById(R.id.FTime_button_submit);
         ib_image = findViewById(R.id.FTime_imageButton);
+        imageURL = "null";
 
         if(getIntent()!=null && getIntent().getExtras()!=null){
             Bundle bundle = getIntent().getExtras();
@@ -188,7 +191,7 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
         et_bday.setText(sdf.format(myCalendar.getTime()));
     }
 
-    private void uploadUserData(){
+    private boolean checkNewUserProfile(){
         String fname = et_fname.getText().toString().trim();
         String lname = et_lname.getText().toString().trim();
         String bday = et_bday.getText().toString().trim();
@@ -198,17 +201,24 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
         if(!TextUtils.isEmpty(fname) && !TextUtils.isEmpty(lname) && !TextUtils.isEmpty(bday)
                 && !TextUtils.isEmpty(address) && !TextUtils.isEmpty(phone) && !TextUtils.isEmpty(gender) ) {
             if (phone.matches("^(?=(?:[0]){1})(?=[0-9]{9,11}).*")) {
-                User user = new User(email, fname, lname, gender, bday, address, phone, imageURL);
-                databaseReference.child(userId).setValue(user);
-                System.out.println(imageURL);
-                startActivity(new Intent(UpdateUserProfileActivity.this, MainActivity.class));
-                finish();
+                newProfile = new User(email, fname, lname, gender, bday, address, phone, imageURL);
+                return true;
             }else {
                 Toast.makeText(UpdateUserProfileActivity.this, "Invalid phone number", Toast.LENGTH_SHORT).show();
+                return false;
             }
         } else {
             Toast.makeText(UpdateUserProfileActivity.this, "Please enter full information", Toast.LENGTH_SHORT).show();
+            return false;
         }
+    }
+
+    private void uploadUserData(){
+                databaseReference.child(userId).setValue(newProfile);
+                System.out.println(imageURL);
+                startActivity(new Intent(UpdateUserProfileActivity.this, MainActivity.class));
+                finish();
+
     }
 
     private void chooseImage() {
@@ -237,42 +247,43 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
     }
 
     private void uploadImage() {
-        if(filePath != null) {
+        if(checkNewUserProfile()==true) {
+            if (filePath != null) {
 
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
+                progressDialog.setTitle("Uploading...");
+                progressDialog.show();
 
-            final StorageReference ref = storageReference.child(userId);
+                final StorageReference ref = storageReference.child(userId);
 
-            ref.putFile(filePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful())
-                    {
-                        throw task.getException();
+                ref.putFile(filePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return ref.getDownloadUrl();
                     }
-                    return ref.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task)
-                {
-                    if (task.isSuccessful())
-                    {
-                        Uri downloadUri = task.getResult();
-//                        Log.e(TAG, "then: " + downloadUri.toString());
-                        imageURL = downloadUri.toString();
-                        uploadUserData();
-                    } else
-                    {
-                        Toast.makeText(UpdateUserProfileActivity.this, "upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            imageURL = downloadUri.toString();
+                            newProfile.setImageURL(imageURL);
+                            uploadUserData();
+                        } else {
+                            Toast.makeText(UpdateUserProfileActivity.this, "Upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
+                });
+            } else {
+                if (imageURL.equals("null")) {
+                    newProfile.setImageURL(imageURL);
+                    uploadUserData();
+                } else {
+                    Toast.makeText(UpdateUserProfileActivity.this, "Please choose an image!" , Toast.LENGTH_SHORT).show();
+
                 }
-            });
-        }else {
-            if (!imageURL.isEmpty()){
-                uploadUserData();
             }
         }
     }
