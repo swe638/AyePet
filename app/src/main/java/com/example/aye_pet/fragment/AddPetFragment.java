@@ -1,6 +1,8 @@
 package com.example.aye_pet.fragment;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.aye_pet.R;
 import com.example.aye_pet.entity.FirebaseDatabaseHelper;
 import com.example.aye_pet.entity.Pet;
@@ -63,6 +66,7 @@ public class AddPetFragment extends Fragment {
     private FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
+    private Activity mActivity;
 
     private Uri filePath;
     private String imageURL;
@@ -107,7 +111,7 @@ public class AddPetFragment extends Fragment {
         btn_submit.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
                 builder.setCancelable(true)
                         .setTitle("Add New Pet")
                         .setMessage("Confirm?")
@@ -205,8 +209,9 @@ public class AddPetFragment extends Fragment {
         {
             filePath = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getApplicationContext().getContentResolver(), filePath);
-                imageButton.setImageBitmap(bitmap);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(mActivity.getApplicationContext().getContentResolver(), filePath);
+                Glide.with(getActivity().getApplicationContext()).load(bitmap).centerCrop().into(imageButton);
+
             }
             catch (IOException e)
             {
@@ -232,7 +237,7 @@ public class AddPetFragment extends Fragment {
             newPet = new Pet(userId, name, type, gender, size, age, vaccinated, dewormed, neutered, location, postedDate, description, imageURL);
             return true;
         }else{
-            Toast.makeText(getActivity(), "Please enter all information", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, "Please enter all information", Toast.LENGTH_SHORT).show();
             return false;
         }
     }
@@ -241,7 +246,7 @@ public class AddPetFragment extends Fragment {
         if(checkPetProfile()==true){
             if(filePath != null)
             {
-                final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+                final ProgressDialog progressDialog = new ProgressDialog(mActivity);
                 progressDialog.setTitle("Uploading...");
                 progressDialog.show();
 
@@ -271,12 +276,12 @@ public class AddPetFragment extends Fragment {
                             progressDialog.hide();
                         } else {
                             progressDialog.hide();
-                            Toast.makeText(getActivity(), "upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mActivity, "upload image failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             } else {
-                Toast.makeText(getActivity(), "Please choose an image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity, "Please choose an image", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -290,7 +295,7 @@ public class AddPetFragment extends Fragment {
 
                 @Override
                 public void DataIsInserted() {
-                    Toast.makeText(getActivity(), "Pet profile has been created successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, "Pet profile has been created successfully", Toast.LENGTH_SHORT).show();
                     System.out.println(imageURL);
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                             new HomeFragment()).commit();
@@ -312,10 +317,23 @@ public class AddPetFragment extends Fragment {
         et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                InputMethodManager ime = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                InputMethodManager ime = (InputMethodManager) mActivity.getSystemService(INPUT_METHOD_SERVICE);
                 ime.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        mActivity = getActivity();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mActivity = null;
     }
 }

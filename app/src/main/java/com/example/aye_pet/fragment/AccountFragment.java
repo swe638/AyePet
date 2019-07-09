@@ -1,5 +1,7 @@
 package com.example.aye_pet.fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,6 +38,7 @@ public class AccountFragment extends Fragment {
 
     String currentUserId;
 
+    private Activity mActivity;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -68,6 +71,12 @@ public class AccountFragment extends Fragment {
         btn_logout = view.findViewById(R.id.Account_logoutButton);
 
 
+        return view;
+    }
+
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstaceState) {
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("user");
         myRef.child(currentUserId).addValueEventListener(new ValueEventListener() {
             @Override
@@ -75,9 +84,11 @@ public class AccountFragment extends Fragment {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 User user = dataSnapshot.getValue(User.class);
-
-
-                Glide.with(getActivity().getApplicationContext()).load(user.getImageURL()).into(iv_userImage);
+                if (mActivity == null) {
+                    return;
+                }
+                Glide.with(mActivity).load(user.getImageURL()).placeholder(R.drawable.ic_account_circle_black_24dp)
+                        .error(R.drawable.ic_account_circle_black_24dp).into(iv_userImage);
                 tv_name.setText(user.getFirstName());
                 tv_userId.setText(currentUserId);
 
@@ -90,16 +101,10 @@ public class AccountFragment extends Fragment {
             }
         });
 
-        return view;
-    }
-
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstaceState) {
         btn_myProfile.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                Intent intent = new Intent(mActivity, UserProfileActivity.class);
                 intent.putExtra("TARGET_USER", currentUserId);
                 startActivity(intent);
             }
@@ -108,7 +113,7 @@ public class AccountFragment extends Fragment {
         btn_myPets.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(getActivity(), MyPetListActivity.class);
+                Intent intent = new Intent(mActivity, MyPetListActivity.class);
                 startActivity(intent);
             }
         });
@@ -116,7 +121,7 @@ public class AccountFragment extends Fragment {
         btn_donate.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(getActivity(), DonationActivity.class);
+                Intent intent = new Intent(mActivity, DonationActivity.class);
                 startActivity(intent);
             }
         });
@@ -124,7 +129,7 @@ public class AccountFragment extends Fragment {
         btn_referFriend.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(getActivity(), ReferFriendActivity.class);
+                Intent intent = new Intent(mActivity, ReferFriendActivity.class);
                 startActivity(intent);
             }
         });
@@ -132,7 +137,7 @@ public class AccountFragment extends Fragment {
         btn_logout.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
                 builder.setCancelable(true)
                         .setTitle("Logout")
                         .setMessage("Are you sure you want to logout?")
@@ -140,8 +145,8 @@ public class AccountFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 FirebaseAuth.getInstance().signOut();
-                                startActivity(new Intent(getActivity(), LoginActivity.class));
-                                getActivity().finish();
+                                startActivity(new Intent(mActivity, LoginActivity.class));
+                                mActivity.finish();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -156,4 +161,16 @@ public class AccountFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        mActivity = getActivity();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mActivity = null;
+    }
 }

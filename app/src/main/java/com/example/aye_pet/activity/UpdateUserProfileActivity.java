@@ -255,7 +255,7 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
             filePath = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                ib_image.setImageBitmap(bitmap);
+                Glide.with(getApplicationContext()).load(bitmap).centerCrop().into(ib_image);
             }
             catch (IOException e)
             {

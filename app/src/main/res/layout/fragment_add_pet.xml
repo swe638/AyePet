@@ -30,6 +30,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:ems="10"
+        android:maxLength="30"
         android:hint="Name"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +39,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
-        android:layout_width="414dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -114,10 +115,12 @@
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="20dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Vaccinated:" />
+            android:text="Vaccinated:"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
 
         <RadioButton
             android:id="@+id/vaccinated_yes"
@@ -151,10 +154,12 @@
 
         <TextView
             android:id="@+id/textView3"
-            android:layout_width="20dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Dewormed:" />
+            android:text="Dewormed:"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
 
         <RadioButton
             android:id="@+id/dewormed_yes"
@@ -188,10 +193,12 @@
 
         <TextView
             android:id="@+id/textView4"
-            android:layout_width="20dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Neutered:" />
+            android:text="Neutered:"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
 
         <RadioButton
             android:id="@+id/neutered_yes"
@@ -218,6 +225,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:ems="10"
+        android:maxLength="100"
         android:hint="Location"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
@@ -234,6 +242,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:ems="10"
+        android:maxLength="200"
         android:hint="Description"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"

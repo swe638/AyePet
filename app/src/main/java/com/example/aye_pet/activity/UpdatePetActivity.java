@@ -218,7 +218,7 @@ public class UpdatePetActivity extends AppCompatActivity {
             filePath = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(UpdatePetActivity.this.getApplicationContext().getContentResolver(), filePath);
-                imageButton.setImageBitmap(bitmap);
+                Glide.with(getApplicationContext()).load(bitmap).centerCrop().into(imageButton);
             }
             catch (IOException e)
             {

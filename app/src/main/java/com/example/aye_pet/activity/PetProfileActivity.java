@@ -37,6 +37,7 @@ public class PetProfileActivity extends AppCompatActivity {
     private User currentUser;
     private Pet pet;
     private String petKey;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +45,7 @@ public class PetProfileActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
-            pet = (Pet) bundle.getSerializable("PET");
+            pet = (Pet)bundle.getSerializable("PET");
             petKey = bundle.getString("KEY");
         }else {
             Toast.makeText(this, "[Pet Profile] Fail to get PROFILE" , Toast.LENGTH_SHORT).show();
@@ -67,25 +68,6 @@ public class PetProfileActivity extends AppCompatActivity {
         btn_edit = findViewById(R.id.PetProfile_editButton);
         btn_delete = findViewById(R.id.PetProfile_deleteButton);
 
-        if(pet.getOwnerId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-            btn_email.setVisibility(View.GONE);
-            btn_call.setVisibility(View.GONE);
-        }else {
-            btn_edit.setVisibility(View.GONE);
-            btn_delete.setVisibility(View.GONE);
-        }
-
-        Glide.with(this).load(pet.getImageURL()).into(imageView);
-        name.setText(pet.getName());
-        type.setText(pet.getType());
-        gender.setText(pet.getGender());
-        size.setText(pet.getSize());
-        age.setText(pet.getAge());
-        vaccinated.setText(pet.getVaccinated());
-        dewormed.setText(pet.getDewormed());
-        neutered.setText(pet.getNeutered());
-        location.setText(pet.getLocation());
-        description.setText(pet.getDescription());
 
         FirebaseDatabase.getInstance().getReference("user").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addValueEventListener(new ValueEventListener() {
@@ -100,6 +82,13 @@ public class PetProfileActivity extends AppCompatActivity {
                     }
                 });
 
+        if(pet.getOwnerId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+            btn_email.setVisibility(View.GONE);
+            btn_call.setVisibility(View.GONE);
+        }else {
+            btn_edit.setVisibility(View.GONE);
+            btn_delete.setVisibility(View.GONE);
+        }
 
         btn_email.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,6 +193,41 @@ public class PetProfileActivity extends AppCompatActivity {
                         .show();
             }
         });
+
+    }
+
+    private void updateLabel() {
+        Glide.with(this).load(pet.getImageURL()).into(imageView);
+        name.setText(pet.getName());
+        type.setText(pet.getType());
+        gender.setText(pet.getGender());
+        size.setText(pet.getSize());
+        age.setText(pet.getAge());
+        vaccinated.setText(pet.getVaccinated());
+        dewormed.setText(pet.getDewormed());
+        neutered.setText(pet.getNeutered());
+        location.setText(pet.getLocation());
+        description.setText(pet.getDescription());
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        FirebaseDatabase.getInstance().getReference("pet").child(petKey)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        pet = dataSnapshot.getValue(Pet.class);
+                        updateLabel();
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     protected void sendEmailToOwner() {

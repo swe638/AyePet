@@ -20,7 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class UserProfileActivity extends AppCompatActivity {
-    private TextView fname, lname, bday, gender, email, phone, address, userId;
+    private TextView fname, lname, bday, gender, email, phone, address;
     private ImageView userImage;
     private Button btn_edit;
     private String currentUserID,target_userID;
@@ -39,7 +39,6 @@ public class UserProfileActivity extends AppCompatActivity {
         email = findViewById(R.id.userprofile_email);
         phone = findViewById(R.id.userprofile_phone);
         address = findViewById(R.id.userprofile_address);
-        userId = findViewById(R.id.userprofile_userId);
         btn_edit = findViewById(R.id.userprofile_button_edit);
         userImage = findViewById(R.id.userprofile_userImage);
 
@@ -70,7 +69,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 email.setText(currentUserProfile.getEmail());
                 phone.setText(currentUserProfile.getPhone());
                 address.setText(currentUserProfile.getAddress());
-                userId.setText(target_userID);
 
             }
 
