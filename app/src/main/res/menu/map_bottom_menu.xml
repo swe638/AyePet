@@ -9,6 +9,7 @@
         android:enabled="true"
         android:icon="@drawable/ic_location_searching_black_24dp"
         app:showAsAction="ifRoom"
+        android:title=""
         />
 
 </menu>

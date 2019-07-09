@@ -16,6 +16,11 @@
         android:roundIcon="@mipmap/ic_logo_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="@string/google_maps_key" />
+
         <activity
             android:name=".activity.ReferFriendActivity"
             android:screenOrientation="portrait" />
@@ -49,13 +54,6 @@
         <activity
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait">
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-        <activity
-
-            android:name=".activity.MapsActivity"
-            android:label="EDMTNearBy"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
