@@ -53,9 +53,7 @@ public class HomeFragment extends Fragment {
         mPets_queryValueSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                queryType = mPets_querySpinner.getSelectedItem().toString().trim();
                 queryValue = mPets_queryValueSpinner.getSelectedItem().toString().trim();
-
                 readData();
 
             }
@@ -78,41 +76,46 @@ public class HomeFragment extends Fragment {
                 mPets_queryValueSpinner.setClickable(true);
                 if(mPets_querySpinner.getSelectedItem().toString().trim().equals("All"))
                 {
+                    queryType = "All";
                     String [] stringsArray = getResources().getStringArray(R.array.pet_all);
                     ArrayAdapter <String> s1 = new ArrayAdapter <String> (getActivity(),android.R.layout.simple_spinner_dropdown_item, stringsArray);
                     s1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     mPets_queryValueSpinner.setAdapter(s1);
                 }
-                else  if(mPets_querySpinner.getSelectedItem().toString().trim().equals("type"))
+                else  if(mPets_querySpinner.getSelectedItem().toString().trim().equals("Type"))
                 {
+                    queryType = "type";
                     String [] stringsArray = getResources().getStringArray(R.array.pet_type);
                     ArrayAdapter <String> s2 = new ArrayAdapter <String> (getActivity(),android.R.layout.simple_spinner_item,stringsArray);
                     s2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     mPets_queryValueSpinner.setAdapter(s2);
                 }
-                else  if(mPets_querySpinner.getSelectedItem().toString().trim().equals("gender"))
+                else  if(mPets_querySpinner.getSelectedItem().toString().trim().equals("Gender"))
                 {
+                    queryType = "gender";
                     String [] stringsArray = getResources().getStringArray(R.array.pet_gender);
                     ArrayAdapter <String> s3 = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,stringsArray);
                     s3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     mPets_queryValueSpinner.setAdapter(s3);
                 }
-                else  if(mPets_querySpinner.getSelectedItem().toString().trim().equals("size"))
+                else  if(mPets_querySpinner.getSelectedItem().toString().trim().equals("Size"))
                 {
+                    queryType = "size";
                     String [] stringsArray = getResources().getStringArray(R.array.pet_size);
                     ArrayAdapter <String> s4 = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,stringsArray);
                     s4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     mPets_queryValueSpinner.setAdapter(s4);
                 }
-                else  if(mPets_querySpinner.getSelectedItem().toString().trim().equals("age"))
+                else  if(mPets_querySpinner.getSelectedItem().toString().trim().equals("Age"))
                 {
+                    queryType = "age";
                     String [] stringsArray = getResources().getStringArray(R.array.pet_age);
                     ArrayAdapter <String> s5 = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,stringsArray);
                     s5.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     mPets_queryValueSpinner.setAdapter(s5);
                 }
 
-                queryType = mPets_querySpinner.getSelectedItem().toString().trim();
+//                queryType = mPets_querySpinner.getSelectedItem().toString().trim();
                 queryValue = mPets_queryValueSpinner.getSelectedItem().toString().trim();
 
                 readData();

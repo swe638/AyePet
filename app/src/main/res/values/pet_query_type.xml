@@ -2,9 +2,9 @@
 <resources>
     <string-array name="pet_query_type">
         <item>All</item>
-        <item>type</item>
-        <item>gender</item>
-        <item>size</item>
-        <item>age</item>
+        <item>Type</item>
+        <item>Gender</item>
+        <item>Size</item>
+        <item>Age</item>
     </string-array>
 </resources>
