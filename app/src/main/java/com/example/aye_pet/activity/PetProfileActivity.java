@@ -1,8 +1,11 @@
 package com.example.aye_pet.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.aye_pet.R;
@@ -231,7 +235,6 @@ public class PetProfileActivity extends AppCompatActivity {
     }
 
     protected void sendEmailToOwner() {
-        Log.i("Send email", "");
 
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("user");
         myRef.child(pet.getOwnerId()).addValueEventListener(new ValueEventListener() {
@@ -257,8 +260,6 @@ public class PetProfileActivity extends AppCompatActivity {
 
                 try {
                     startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-                    Toast.makeText(PetProfileActivity.this,
-                            "Email sent successfully", Toast.LENGTH_SHORT).show();
                 } catch (android.content.ActivityNotFoundException ex) {
                     Toast.makeText(PetProfileActivity.this,
                             "There is no email client installed.", Toast.LENGTH_SHORT).show();
@@ -284,9 +285,32 @@ public class PetProfileActivity extends AppCompatActivity {
                 // whenever data at this location is updated.
                 User ownerUserProfile = dataSnapshot.getValue(User.class);
 
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:"+ownerUserProfile.getPhone()));//change the number
-                startActivity(callIntent);
+                try
+                {
+                    if(Build.VERSION.SDK_INT > 22)
+                    {
+                        if (ActivityCompat.checkSelfPermission(PetProfileActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+
+                            ActivityCompat.requestPermissions(PetProfileActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 101);
+
+                        }
+
+                        Intent callIntent = new Intent(Intent.ACTION_CALL);
+                        callIntent.setData(Uri.parse("tel:"+ownerUserProfile.getPhone()));//change the number
+                        startActivity(callIntent);
+                    }
+                    else {
+                        Intent callIntent = new Intent(Intent.ACTION_CALL);
+                        callIntent.setData(Uri.parse("tel:"+ownerUserProfile.getPhone()));//change the number
+                        startActivity(callIntent);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+
 
             }
 
